@@ -2,11 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class ProfileUpdateRequest extends FormRequest
+class AccountDeletionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +23,7 @@ class ProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'birthdate' => 'required|date',
-            'email' => 'required|email|unique:'.User::class,
+            'password' => 'required|current-password',
         ];
     }
 
@@ -39,11 +35,8 @@ class ProfileUpdateRequest extends FormRequest
     public function messages()
     {
         return [
-            'first_name.required' => 'First name field is required.',
-            'last_name.required' => 'Last name field is required.',
-            'birthdate.required' => 'Birthdate field is required.',
-            'email.required' => 'Email field is required.',
-            'email.unique' => 'This email is already taken.',
+            'password.required' => 'Enter your password to proceed in deleting this account.',
+            'password.current-password' => 'Password given is incorrect.',
         ];
     }
 }

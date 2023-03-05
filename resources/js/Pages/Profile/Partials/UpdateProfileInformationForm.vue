@@ -13,7 +13,9 @@ const props = defineProps({
 const user = usePage().props.auth.user;
 
 const form = useForm({
-    name: user.name,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    birthdate: user.birthdate,
     email: user.email,
 });
 </script>
@@ -29,22 +31,53 @@ const form = useForm({
         </header>
 
         <form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
-            <div>
-                <InputLabel for="name" value="Name" />
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                    <InputLabel for="first_name" value="First name" />
 
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
+                    <TextInput
+                        id="first_name"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="form.first_name"
+                        required
+                        autofocus
+                        autocomplete="first_name"
+                    />
 
-                <InputError class="mt-2" :message="form.errors.name" />
+                    <InputError class="mt-2" :message="form.errors.first_name" />
+                </div>
+                <div>
+                    <InputLabel for="last_name" value="Last name" />
+
+                    <TextInput
+                        id="last_name"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="form.last_name"
+                        required
+                        autocomplete="last_name"
+                    />
+
+                    <InputError class="mt-2" :message="form.errors.last_name" />
+                </div>
             </div>
 
+            <div>
+                <InputLabel for="birthdate" value="Birthdate" />
+
+                <TextInput
+                    id="birthdate"
+                    type="date"
+                    class="mt-1 block w-full"
+                    v-model="form.birthdate"
+                    required
+                    autocomplete="birthdate"
+                />
+
+                <InputError class="mt-2" :message="form.errors.birthdate" />
+            </div>
+            
             <div>
                 <InputLabel for="email" value="Email" />
 

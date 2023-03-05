@@ -5,15 +5,16 @@ namespace App\Http\Requests;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 
-class ProfileUpdateRequest extends FormRequest
+class RegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return Auth::check();
+        return Auth::guest();
     }
 
     /**
@@ -28,6 +29,7 @@ class ProfileUpdateRequest extends FormRequest
             'last_name' => 'required|string|max:255',
             'birthdate' => 'required|date',
             'email' => 'required|email|unique:'.User::class,
+            'password' => ['required', 'confirmed', Password::defaults()],
         ];
     }
 
@@ -44,6 +46,8 @@ class ProfileUpdateRequest extends FormRequest
             'birthdate.required' => 'Birthdate field is required.',
             'email.required' => 'Email field is required.',
             'email.unique' => 'This email is already taken.',
+            'password.required' => 'Password field is required.',
+            'password.confirmed' => 'This doesn\'t match with the confirmed password.',
         ];
     }
 }
