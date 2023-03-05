@@ -1,32 +1,51 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { PlusIcon, ChevronDownIcon } from '@heroicons/vue/24/solid'
-import { Head } from '@inertiajs/vue3';
-import { onMounted } from 'vue'
-import { 
-    // initAccordions, 
-    // initCarousels, 
-    // initCollapses, 
-    // initDials, 
-    // initDismisses, 
-    // initDrawers, 
-    initDropdowns, 
-    // initModals, 
-    // initPopovers, 
-    // initTabs, 
-    initTooltips } from 'flowbite'
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import InputError from '@/Components/InputError.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import Modal from '@/Components/Modal.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+import TextArea from '@/Components/TextArea.vue';
+import { PlusIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
+import { Head, useForm } from '@inertiajs/vue3';
+import { onMounted, nextTick, ref } from 'vue';
+import { initDropdowns, initTooltips } from 'flowbite'
 
-// initialize components based on data attribute selectors
 onMounted(() => {
-    // initAccordions();
-    // initCarousels();
-    // initCollapses();
-    // initDials();
-    // initDismisses();
-    // initDrawers();
     initDropdowns();
     initTooltips();
 })
+
+const createModalOpened = ref(false);
+const passwordInput = ref(null);
+
+const form = useForm({
+    title: '',
+    description: '',
+    due_date: '',
+});
+
+const openCreateTaskModal = () => {
+    createModalOpened.value = true;
+
+    nextTick(() => passwordInput.value.focus());
+};
+
+const createTask = () => {
+    form.delete(route('profile.destroy'), {
+        preserveScroll: true,
+        onSuccess: () => closeModal(),
+        onError: () => passwordInput.value.focus(),
+        onFinish: () => form.reset(),
+    });
+};
+
+const closeModal = () => {
+    createModalOpened.value = false;
+
+    form.reset();
+};
 
 </script>
 
@@ -43,10 +62,19 @@ onMounted(() => {
                 <div class="relative overflow-hidden py-4 px-2 sm:rounded-lg">
                     <div class="flex items-center justify-between pb-4 dark:bg-gray-900">
                         <div class="space-x-4">
-                            <button id="dropdownActionButton" data-dropdown-toggle="dropdownAction" class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5" type="button">
-                                <ChevronDownIcon class="w-3 h-3 mr-2" />
+                            <PrimaryButton
+                                class="inline-flex items-center bg-blue-500 text-white border border-blue-500 focus:outline-none hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-sm px-3 py-1.5"
+                                :class="{ 'opacity-25': form.processing }"
+                                :disabled="form.processing"
+                                @click="openCreateTaskModal"
+                            >
+                                <PlusIcon class="w-3 h-3 mr-2" />
+                                Create new task
+                            </PrimaryButton>
+
+                            <button id="dropdownActionButton" data-dropdown-toggle="dropdownAction" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150" type="button">
                                 Action
-                                <!-- <svg class="w-3 h-3 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg> -->
+                                <ChevronDownIcon class="w-3 h-3 ml-2" />
                             </button>
                             <!-- Dropdown menu -->
                             <div id="dropdownAction" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
@@ -59,10 +87,6 @@ onMounted(() => {
                                     </li>
                                 </ul>
                             </div>
-                            <button class="inline-flex items-center bg-blue-500 text-white border border-blue-500 focus:outline-none hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-sm px-3 py-1.5" type="button">
-                                <PlusIcon class="w-3 h-3 mr-2" />
-                                Create new task
-                            </button>
                         </div>
                         <label for="table-search" class="sr-only">Search</label>
                         <div class="relative">
@@ -169,4 +193,65 @@ onMounted(() => {
             </div>
         </div>
     </AuthenticatedLayout>
+
+    <Modal :show="createModalOpened" @close="closeModal">
+        <div class="p-6 space-y-6">
+            <h2 class="text-lg font-medium text-gray-900">
+                Create a Task
+            </h2>
+
+            <div class="space-y-2">
+                <InputLabel for="title" value="Task name" />
+
+                <TextInput
+                    id="title"
+                    v-model="form.title"
+                    type="text"
+                    class="block w-full"
+                    placeholder="Task Title"
+                />
+
+                <InputError :message="form.errors.title" class="mt-2" />
+            </div>
+
+            <div class="space-y-2">
+                <InputLabel for="due_date" value="Due date" />
+
+                <TextInput
+                    id="due_date"
+                    v-model="form.due_date"
+                    type="date"
+                    class="block w-full"
+                />
+
+                <InputError :message="form.errors.due_date" class="mt-2" />
+            </div>
+
+            <div class="space-y-2">
+                <InputLabel for="description" value="Due date" />
+
+                <TextArea
+                    id="description"
+                    v-model="form.description"
+                    type="date"
+                    class="block w-full"
+                />
+
+                <InputError :message="form.errors.description" class="mt-2" />
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <SecondaryButton @click="closeModal"> Cancel </SecondaryButton>
+
+                <PrimaryButton
+                    class="ml-3"
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                    @click="createTask"
+                >
+                    Create
+                </PrimaryButton>
+            </div>
+        </div>
+    </Modal>
 </template>
