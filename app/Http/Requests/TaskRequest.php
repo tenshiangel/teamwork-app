@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class TaskRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class TaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return Auth::check();
     }
 
     /**
@@ -22,7 +23,23 @@ class TaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'due_date' => 'required|date',
+        ];
+    }
+
+    /**
+     * Messages returned when the request fails.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     */
+    public function messages()
+    {
+        return [
+            'title.required' => 'Task title is required.',
+            'description.required' => 'Task description is required.',
+            'due_date.required' => 'Due date for the task is required.',
         ];
     }
 }
