@@ -24,19 +24,17 @@ const form = useForm({
     title: '',
     description: '',
     due_date: '',
+    processing: false,
 });
 
 const openCreateTaskModal = () => {
     createModalOpened.value = true;
-
-    nextTick(() => passwordInput.value.focus());
 };
 
 const createTask = () => {
-    form.delete(route('profile.destroy'), {
+    form.post(route('task.store'), {
         preserveScroll: true,
         onSuccess: () => closeModal(),
-        onError: () => passwordInput.value.focus(),
         onFinish: () => form.reset(),
     });
 };
@@ -209,9 +207,23 @@ const closeModal = () => {
                     type="text"
                     class="block w-full"
                     placeholder="Task Title"
+                    autofocus
                 />
 
                 <InputError :message="form.errors.title" class="mt-2" />
+            </div>
+
+            <div class="space-y-2">
+                <InputLabel for="description" value="Description" />
+
+                <TextArea
+                    id="description"
+                    v-model="form.description"
+                    type="date"
+                    class="block w-full"
+                />
+
+                <InputError :message="form.errors.description" class="mt-2" />
             </div>
 
             <div class="space-y-2">
@@ -225,19 +237,6 @@ const closeModal = () => {
                 />
 
                 <InputError :message="form.errors.due_date" class="mt-2" />
-            </div>
-
-            <div class="space-y-2">
-                <InputLabel for="description" value="Due date" />
-
-                <TextArea
-                    id="description"
-                    v-model="form.description"
-                    type="date"
-                    class="block w-full"
-                />
-
-                <InputError :message="form.errors.description" class="mt-2" />
             </div>
 
             <div class="mt-6 flex justify-end">
