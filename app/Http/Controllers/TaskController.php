@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TaskRequest;
+use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -60,9 +61,18 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(TaskRequest $request, Task $task)
+    public function update(TaskRequest $request)
     {
-        //
+        $task = Task::find($request->task_id);
+
+        $task->title = $request->title;
+        $task->description = $request->description;
+        $task->due_date = $request->due_date;
+        $task->status = $request->status;
+        $task->completion = $request->completion;
+        $task->save();
+
+        return response()->noContent();
     }
 
     /**
@@ -73,5 +83,15 @@ class TaskController extends Controller
         $task->delete();
 
         return Redirect::route('tasks');
+    }
+
+    /**
+     * Get resources in specified limit.
+     */
+    public function get(Request $request)
+    {
+        $tasks = Task::paginate(15);
+
+        return TaskResource::collection($tasks);
     }
 }
