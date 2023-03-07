@@ -6,7 +6,7 @@ use App\Http\Requests\TaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class TaskController extends Controller
@@ -39,7 +39,7 @@ class TaskController extends Controller
             'due_date' => $request->due_date,
         ]);
 
-        return Redirect::route('tasks');
+        return back()->with('toast', ['type' => 'success', 'message' => 'Task created successfully!']);
     }
 
     /**
@@ -72,7 +72,7 @@ class TaskController extends Controller
         $task->completion = $request->completion;
         $task->save();
 
-        return response()->noContent();
+        return back()->with('toast', ['type' => 'success', 'message' => 'Task updated successfully!']);
     }
 
     /**
@@ -80,9 +80,12 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
+        if ($task->user_id != Auth::user()->id)
+            return back()->with('toast', ['type' => 'failed', 'message' => 'You are not authorized to delete this task.']);
+
         $task->delete();
 
-        return Redirect::route('tasks');
+        return back()->with('toast', ['type' => 'success', 'message' => 'Task deleted successfully!']);
     }
 
     /**
@@ -90,7 +93,7 @@ class TaskController extends Controller
      */
     public function get(Request $request)
     {
-        $tasks = $request->allTasks == 'all' ? Task::paginate(15) : Task::where('user_id', $request->user()->id)->paginate(15);
+        $tasks = $request->allTasks == 'all' ? Task::paginate(5) : Task::where('user_id', $request->user()->id)->paginate(5);
 
         return TaskResource::collection($tasks);
     }
