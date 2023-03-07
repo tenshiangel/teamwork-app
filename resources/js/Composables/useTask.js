@@ -1,4 +1,5 @@
 import { reactive } from 'vue';
+import { useForm } from '@inertiajs/vue3';
 import toast from '@/Composables/toast';
 
 export default reactive({
@@ -13,6 +14,21 @@ export default reactive({
         lastPage: 0,
         total: 0,
     },
+    errors: {
+        description: null,
+        due_date: null,
+        status: null,
+        title: null,
+    },
+    openedTask: {
+        completion: 0,
+        description: null,
+        due_date: null,
+        id: 0,
+        owner: null,
+        status: null,
+        title: null,
+    },
     get(scope = 'all', url = null) {
         this.tasks = [];
 
@@ -23,8 +39,45 @@ export default reactive({
         })
         .then(res => {
             this.tasks = res.data.data;
-            this.setPagination(res.data);
         })
+    },
+    single(id) {
+        axios.get(route('task.get.one', id))
+        .then(res => {
+            this.openedTask = res.data.data;
+        })
+    },
+    update() {
+        const form = useForm(this.openedTask);
+        form.patch(route('task.update', form.id), {
+            preserveScroll: true,
+            onSuccess: (response) => {
+                let responseToast = response.props.toast;
+                toast.add(responseToast);
+                setTimeout(() => this.get(), 500);
+            },
+            onError: (errors) => {
+                this.errors = errors;
+            },
+        });
+    },
+    delete(form) {
+        form.delete(route('task.destroy', form.id), {
+            preserveScroll: true,
+            onSuccess: (response) => {
+                let responseToast = response.props.toast;
+                toast.add(responseToast);
+                setTimeout(() => this.get(), 500);
+            }
+        });
+    },
+    reset() {
+        this.errors = {
+            description: null,
+            due_date: null,
+            status: null,
+            title: null,
+        };
     },
     setPagination(data) {
         this.pagination = {
@@ -37,15 +90,5 @@ export default reactive({
             lastPage: data.meta.last_page,
             total: data.meta.total,
         }
-    },
-    delete(form) {
-        form.delete(route('task.destroy', form.id), {
-            preserveScroll: true,
-            onSuccess: (response) => {
-                let responseToast = response.props.toast;
-                toast.add(responseToast);
-                setTimeout(() => this.get(), 500);
-            }
-        });
     },
 });

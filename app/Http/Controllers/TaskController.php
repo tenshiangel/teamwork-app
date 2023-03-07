@@ -47,7 +47,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        //
+        return new TaskResource($task);
     }
 
     /**
@@ -61,10 +61,8 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(TaskRequest $request)
+    public function update(TaskRequest $request, Task $task)
     {
-        $task = Task::find($request->task_id);
-
         $task->title = $request->title;
         $task->description = $request->description;
         $task->due_date = $request->due_date;
