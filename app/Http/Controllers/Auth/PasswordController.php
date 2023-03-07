@@ -18,6 +18,6 @@ class PasswordController extends Controller
             'password' => Hash::make($request['password']),
         ]);
 
-        return back();
+        return back()->with('toast', ['type' => 'success', 'message' => 'Password successfully updated!']);
     }
 }
