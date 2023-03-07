@@ -9,11 +9,6 @@ class Task extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'user_id',
         'title',
@@ -22,7 +17,7 @@ class Task extends Model
     ];
 
     public function owner() {
-        
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function collaborators() {
