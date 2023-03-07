@@ -92,13 +92,22 @@ useTask.get(state.toggleType);
                         </div>
                     </div>
                     
-                    <div v-if="useTask.tasks.length > 0" class="space-y-6">
+                    <div v-if="useTask.tasks.length" class="space-y-6">
                         <TaskCard v-for="task in useTask.tasks" :key="task.id" :task="task" />
                         
                         <Pagination :pagination="useTask.pagination" @current="(url) => useTask.get(state.toggleType, url)"/>
                     </div>
-                    <div v-else>
-                        <!-- <Pagination :pagination="useTask.pagination" @current="(url) => useTask.get(state.toggleType, url)"/> -->
+                    <div v-else class="p-10 space-y-6 md:p-20 md:space-y-10 text-center">
+                        <h2 class="mb-5 text-3xl font-semibold">Taskboard is empty</h2>
+                        <p class="text-gray-400">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Interdum consectetur libero id faucibus nisl tincidunt eget nullam. Gravida rutrum quisque non tellus orci. Facilisis gravida neque convallis a cras semper. Quam pellentesque nec nam aliquam sem et. Facilisis sed odio morbi quis commodo odio aenean sed. Sed turpis tincidunt id aliquet risus feugiat. Dui ut ornare lectus sit amet est placerat in. Aenean pharetra magna ac placerat. Mauris a diam maecenas sed enim. Varius vel pharetra vel turpis nunc eget. Non enim praesent elementum facilisis.</p>
+                        <hr class="my-6 h-1 border-t-0 bg-gray-200 opacity-100" />
+                        <p class="text-gray-600">Don't you worry, you can create a new task by clicking the button below.</p>
+                        <PrimaryButton
+                            class="inline-flex items-center bg-blue-500 text-white text-xl border border-blue-500 focus:outline-none hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg px-6 py-3"
+                            @click="openCreateTaskModal"
+                        >
+                            Create a new task
+                        </PrimaryButton>
                     </div>
                 </div>
             </div>
