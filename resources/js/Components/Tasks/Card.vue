@@ -1,11 +1,16 @@
 <script setup>
 import useTask from '@/Composables/useTask';
+import UpdateTaskModal from '@/Components/Tasks/UpdateModal.vue';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline';
 import { useForm, usePage } from '@inertiajs/vue3';
+import { reactive } from 'vue';
 
 const user = usePage().props.auth.user;
 const props = defineProps(['task']);
-const emit = defineEmits(['update', 'afterDelete']);
+const emit = defineEmits(['update']);
+const state = reactive({
+    isOpened: false,
+})
 
 const delForm = useForm({
     id: props.task.id
@@ -23,6 +28,14 @@ const updateTask = (form) => {
 
 const deleteTask = () => {
     useTask.delete(delForm);
+};
+
+const openUpdateTaskModal = () => {
+    state.isOpened = true;
+};
+
+const closeModal = (isSuccess) => {
+    state.isOpened = false;
 };
 </script>
 
@@ -51,7 +64,7 @@ const deleteTask = () => {
 
         <!-- Task options -->
         <div v-if="task.owner.id == user.id" class="absolute p-4 space-x-4 z-2 text-gray-400 top-0 right-0">
-            <PencilSquareIcon class="w-6 h-6 ml-2 inline-block cursor-pointer hover:text-gray-800" />
+            <PencilSquareIcon @click="openUpdateTaskModal" class="w-6 h-6 ml-2 inline-block cursor-pointer hover:text-gray-800" />
             <TrashIcon @click="deleteTask" class="w-6 h-6 ml-2 inline-block cursor-pointer hover:text-red-800" />
         </div>
 
@@ -86,4 +99,6 @@ const deleteTask = () => {
         </div>
         <div class="absolute w-full z-2 bottom-0 left-0 h-1 bg-gray-300"></div>
     </div>
+
+    <UpdateTaskModal :show="state.isOpened" :task="task" @close="(success) => closeModal(success)" />
 </template>

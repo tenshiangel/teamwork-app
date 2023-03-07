@@ -5,10 +5,9 @@ import TaskModal from '@/Components/TaskModal.vue';
 import TaskCard from '@/Components/Tasks/Card.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { PlusIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
-import { Head, useForm, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import { onMounted, reactive, watch } from 'vue';
-import { initDropdowns, initTooltips } from 'flowbite'
-import toast from '@/Composables/toast';
+import { initDropdowns } from 'flowbite'
 import useTask from '@/Composables/useTask';
 
 onMounted(() => {
@@ -93,33 +92,18 @@ useTask.get(state.toggleType);
                         </div>
                     </div>
                     
-                    <div>
-                        <TransitionGroup
-                            tag="div"
-                            class="space-y-6"
-                            enter-from-class="translate-x-full opacity-0"
-                            enter-active-class="duration-500"
-                            leave-active-class="duration-500"
-                            leave-to-class="translate-x-full opacity-0">
-                            <TaskCard v-for="task in useTask.tasks" :key="task.id" :task="task" @after-delete="useTask.get()" />
-                        </TransitionGroup>
-                    </div>
-                    <div>
-                        <!-- <div class="flex">
-                            <template v-for="(link, key) in useTask.pagination.links" :key="key">
-                                <Link :href="link.url" v-html="link.label" />
-                            </template>
-                        </div> -->
+                    <div v-if="useTask.tasks.length > 0" class="space-y-6">
+                        <TaskCard v-for="task in useTask.tasks" :key="task.id" :task="task" />
                         
-                        <Pagination :pagination="useTask.pagination"
-                            @current="(url) => useTask.get(state.toggleType, url)"/>
+                        <Pagination :pagination="useTask.pagination" @current="(url) => useTask.get(state.toggleType, url)"/>
+                    </div>
+                    <div v-else>
+                        <!-- <Pagination :pagination="useTask.pagination" @current="(url) => useTask.get(state.toggleType, url)"/> -->
                     </div>
                 </div>
             </div>
         </div>
     </AuthenticatedLayout>
 
-    <TaskModal :show="state.isOpened" :modal-title="'Create a Task'"
-        @close="(success) => closeModal(success)">
-    </TaskModal>
+    <TaskModal :show="state.isOpened" @close="(success) => closeModal(success)" />
 </template>

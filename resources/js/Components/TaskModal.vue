@@ -8,7 +8,6 @@ import TextInput from '@/Components/TextInput.vue';
 import TextArea from '@/Components/TextArea.vue';
 import { useForm } from '@inertiajs/vue3';
 
-const props = defineProps(['modalTitle']);
 const emit = defineEmits(['submit', 'close']);
 
 const form = useForm({
@@ -29,11 +28,11 @@ const createTask = () => {
 };
 </script>
 
-<template lang="">
+<template>
     <Modal>
         <div class="p-6 space-y-6">
             <h2 class="text-lg font-medium text-gray-900">
-                {{ props.modalTitle }}
+                Create a Task
             </h2>
 
             <div class="space-y-2">
