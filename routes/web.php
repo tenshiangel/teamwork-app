@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/task', [TaskController::class, 'store'])->name('task.store');
     Route::patch('/task', [TaskController::class, 'update'])->name('task.update');
     Route::delete('/task', [TaskController::class, 'destroy'])->name('task.destroy');
+    Route::get('/tasks/list', [TaskController::class, 'get'])->name('task.all');
 });
 
 require __DIR__.'/auth.php';
