@@ -90,7 +90,7 @@ class TaskController extends Controller
      */
     public function get(Request $request)
     {
-        $tasks = Task::paginate(15);
+        $tasks = $request->allTasks == 'all' ? Task::paginate(15) : Task::where('user_id', $request->user()->id)->paginate(15);
 
         return TaskResource::collection($tasks);
     }
